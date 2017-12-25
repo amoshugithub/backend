@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+	<title>Firebase testing</title>
+	<style type="text/css">
+		div{
+			margin-left: 50px;
+			margin-top: 50px;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<input type="input" id="input">
+		<button type="button" id="btn">Send</button>
+		
+		<ul id="list">
+			
+		</ul>
+	</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyD_uRhmJXzy86GNyb5Z8kgDjXmgXbUxHFg",
+	    authDomain: "todolist-c6006.firebaseapp.com",
+	    databaseURL: "https://todolist-c6006.firebaseio.com",
+	    projectId: "todolist-c6006",
+	    storageBucket: "todolist-c6006.appspot.com",
+	  };
+	  firebase.initializeApp(config);
+
+	  $(document).ready(function(){
+	  	var msgRefTest = firebase.database().ref('/test');
+	  	var msgRefMessage = firebase.database().ref('/message');
+	  	
+	  	$('#btn').on('click', function() {
+		  	var word = $('#input').val();
+		  	
+		  	msgRefMessage.push({
+		  		message:word
+		  	})
+
+		  	console.log('word',word)
+		  	console.log('msgRefMessage',msgRefMessage)
+		  	
+	  	})
+
+	  	// msgRefMessage.once('value').then(function(snapshot){
+	  	msgRefMessage.on('value',function(snapshot){
+
+	  		var val = snapshot.val()
+	 		var list = ''
+
+	 		//each(obj or arr, callback(key,valur or index,value))
+	 		$.each(val,function(k,v){
+	 			// console.log(k);
+	 			// console.log(v);
+	 			
+	 			// var list = `<li>1qaz</li><li>2wsx</li><li>3edc</li>`
+	 			list = `${list}<li>${v.message}</li> <button class="btn btn-warning" id="btnRemove" data-key="${k}">Remove</button>`
+	 			// console.log(list)
+	 		})
+	 		$('#list').html(list)
+
+	 		$('#list').on('click','#btnRemove',function(){
+	 				// console.log(this)
+	 				// console.log('remove',$(this).data('key'))
+	 				var listKey = $(this).data('key')
+	 				msgRefMessage.child(listKey).remove()
+	 			})
+	 		})
+	  	})
+
+	  
+	</script>
+	
+</html>
